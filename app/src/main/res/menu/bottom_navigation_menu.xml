@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bnav_home"
+        android:icon="@drawable/icon_home"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/bnav_catalog"
+        android:icon="@drawable/icon_catalog"
+        android:title="Catalog" />
+
+    <item
+        android:id="@+id/bnav_cart"
+        android:icon="@drawable/icon_cart"
+        android:title="Cart" />
+
+    <item
+        android:id="@+id/bnav_account"
+        android:icon="@drawable/icon_account_circle"
+        android:title="Account" />
+</menu>

@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Kookeries</string>
+    <string name="app_url">www.kookeries.com</string>
+
+    <string name="search_field_placeholder">Search in Kookeries</string>
+    <string name="section_title">Featured Products</string>
+    <string name="section_action"><![CDATA[See all >]]></string>
+    <string name="currency_symbol">Kr.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login">Login</string>
+    <string name="create_new_account">Create new account</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="already_a_member_login">Already a member? Login</string>
+    <string name="register">Register</string>
+    <string name="view_all">View all</string>
+    <string name="price">Price</string>
+    <string name="description">Description</string>
+    <string name="save">Save</string>
+
+    <string name="api_client_id">2</string>
+    <string name="api_client_secret">B2GAefATS0llKL2wNNHoh4bPtBmZsj8sVjj1UNtr</string>
+    <string name="google_places_api_key">AIzaSyD0yA9JSriWWbRl3qMOlrKWWmMTTZIR0hQ</string>
+
+    <string name="error_gif">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
+    <string name="button_sure_default">Select</string>
+    <string name="button_sure">Select(%1$d)</string>
+    <string name="not_entered">Not entered</string>
+</resources>
