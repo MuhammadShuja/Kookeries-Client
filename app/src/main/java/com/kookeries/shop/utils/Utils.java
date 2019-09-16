@@ -1,5 +1,6 @@
 package com.kookeries.shop.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
@@ -9,10 +10,18 @@ import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.kookeries.shop.R;
 
 public class Utils {
+
+    public static void addReloadViewToSection(Activity activity, ViewGroup section) {
+        activity.getLayoutInflater().inflate(R.layout.section_reload, section);
+    }
 
     public static void menuIconColor(MenuItem menuItem, int color) {
         Drawable drawable = menuItem.getIcon();

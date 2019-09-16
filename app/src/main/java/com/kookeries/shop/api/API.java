@@ -90,12 +90,12 @@ public class API {
         mCategories = categories;
     }
 
-    public static void getProducts(Category category, final ApiResponse.CatalogListener<Product> listener){
+    public static void getProducts(Category category, boolean relaod, final ApiResponse.CatalogListener<Product> listener) {
         if(category != null){
             CatalogController.products(mContext, category, listener);
         }
         else{
-            if(mProducts == null){
+            if (relaod || mProducts == null) {
                 CatalogController.products(mContext, null, listener);
             }
             else {
@@ -161,7 +161,7 @@ public class API {
         getCategories(new ApiResponse.CatalogListener<Category>() {
             @Override
             public void onSuccess(List<Category> response) {
-                getProducts(null, new ApiResponse.CatalogListener<Product>() {
+                getProducts(null, false, new ApiResponse.CatalogListener<Product>() {
                     @Override
                     public void onSuccess(List<Product> response) {
                         Log.d(TAG, PRELOG_SUCCESS+ response.size() + " products");
@@ -212,7 +212,7 @@ public class API {
         getCategories(new ApiResponse.CatalogListener<Category>() {
             @Override
             public void onSuccess(List<Category> response) {
-                getProducts(null, new ApiResponse.CatalogListener<Product>() {
+                getProducts(null, false, new ApiResponse.CatalogListener<Product>() {
                     @Override
                     public void onSuccess(List<Product> response) {
                         Log.d(TAG, PRELOG_SUCCESS+ response.size() + " products");

@@ -93,9 +93,9 @@ public class Category {
     ------------------------------------
     */
 
-    public void getProducts(DataReadyListener listener) {
+    public void getProducts(boolean reload, DataReadyListener listener) {
         if(products == null){
-            reloadProducts(listener);
+            loadProducts(reload, listener);
         }
         else{
             listener.onReady(products);
@@ -106,8 +106,8 @@ public class Category {
         this.products = products;
     }
 
-    private void reloadProducts(final DataReadyListener listener){
-        API.getProducts(this, new ApiResponse.CatalogListener<Product>() {
+    private void loadProducts(boolean relaod, final DataReadyListener listener) {
+        API.getProducts(this, relaod, new ApiResponse.CatalogListener<Product>() {
             @Override
             public void onSuccess(List<Product> data) {
                 Category.this.setProducts(data);
@@ -126,9 +126,9 @@ public class Category {
         });
     }
 
-    public void takeProducts(final int count, final boolean shuffle, final Product excludeProduct, final DataReadyListener listener){
+    public void takeProducts(boolean reload, final int count, final boolean shuffle, final Product excludeProduct, final DataReadyListener listener) {
 
-        this.getProducts(new DataReadyListener() {
+        this.getProducts(reload, new DataReadyListener() {
             @Override
             public void onReady(List<Product> products) {
                 if(shuffle){

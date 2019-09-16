@@ -21,17 +21,18 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
-        <activity android:name="com.kookeries.shop.activities.HomeActivity" />
+
+        <activity android:name="com.kookeries.shop.ui.activities.HomeActivity" />
         <activity
-            android:name="com.kookeries.shop.activities.CatalogActivity"
-            android:parentActivityName="com.kookeries.shop.activities.HomeActivity" />
-        <activity android:name="com.kookeries.shop.activities.ProductActivity" />
+            android:name="com.kookeries.shop.ui.activities.CatalogActivity"
+            android:parentActivityName="com.kookeries.shop.ui.activities.HomeActivity" />
+        <activity android:name="com.kookeries.shop.ui.activities.ProductActivity" />
         <activity
-            android:name="com.kookeries.shop.activities.CartActivity"
+            android:name="com.kookeries.shop.ui.activities.CartActivity"
             android:theme="@style/AppThemeWhite" />
-        <activity android:name="com.kookeries.shop.activities.LoginActivity" />
-        <activity android:name="com.kookeries.shop.activities.RegisterActivity" />
-        <activity android:name="com.kookeries.shop.activities.SplashActivity">
+        <activity android:name="com.kookeries.shop.ui.activities.LoginActivity" />
+        <activity android:name="com.kookeries.shop.ui.activities.RegisterActivity" />
+        <activity android:name="com.kookeries.shop.ui.activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,17 +40,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.kookeries.shop.activities.SellerDashboardActivity"
-            android:parentActivityName="com.kookeries.shop.activities.HomeActivity"
+            android:name="com.kookeries.shop.ui.activities.SellerDashboardActivity"
+            android:parentActivityName="com.kookeries.shop.ui.activities.HomeActivity"
             android:theme="@style/AppThemeWithDarkStatusBar" />
-        <activity android:name="com.kookeries.shop.activities.SellerProductsActivity"
-            android:parentActivityName="com.kookeries.shop.activities.SellerDashboardActivity"
+        <activity
+            android:name="com.kookeries.shop.ui.activities.SellerProductsActivity"
+            android:parentActivityName="com.kookeries.shop.ui.activities.SellerDashboardActivity"
             android:theme="@style/AppThemeWithDarkStatusBar" />
-        <activity android:name="com.kookeries.shop.activities.SellerOrdersActivity"
-            android:parentActivityName="com.kookeries.shop.activities.SellerDashboardActivity"
+        <activity
+            android:name="com.kookeries.shop.ui.activities.SellerOrdersActivity"
+            android:parentActivityName="com.kookeries.shop.ui.activities.SellerDashboardActivity"
             android:theme="@style/AppThemeWithDarkStatusBar" />
-        <activity android:name="com.kookeries.shop.activities.SellerProductNewActivity"
-            android:parentActivityName="com.kookeries.shop.activities.SellerDashboardActivity"
+        <activity
+            android:name="com.kookeries.shop.ui.activities.SellerProductNewActivity"
+            android:parentActivityName="com.kookeries.shop.ui.activities.SellerDashboardActivity"
             android:theme="@style/AppThemeWithDarkStatusBar" />
     </application>
 
