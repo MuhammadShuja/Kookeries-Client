@@ -7,14 +7,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -49,14 +47,20 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class SellerProductNewActivity extends AppCompatActivity {
 
     private static final String TAG = "SellerProductNew";
 
-    private static final int COMMISSION_VALUE = 15;
+    private static final int COMMISSION_PERCENTAGE_VALUE = 15;
     private static final int REQUEST_CODE_PERMISSION = 111;
     private static final int REQUEST_CODE_PICKER = 111;
     private static int VALIDATION_FLAG = 0;
+
     private List<Uri> imagesPicked;
     private int selectedImage;
 
@@ -67,6 +71,8 @@ public class SellerProductNewActivity extends AppCompatActivity {
     private RecyclerView rvImages;
     private ImageGridAdapter imageGridAdapter;
     private List<ProductImage> productImages = new ArrayList<>();
+
+    SweetAlertDialog dialog;
 
     private String[] items;
 
@@ -176,7 +182,7 @@ public class SellerProductNewActivity extends AppCompatActivity {
     }
 
     private void setupToolbar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -210,7 +216,7 @@ public class SellerProductNewActivity extends AppCompatActivity {
             }
         });
 
-        rvImages = (RecyclerView) findViewById(R.id.rvImages);
+        rvImages = findViewById(R.id.rvImages);
         rvImages.setLayoutManager(new GridLayoutManager(this, 3));
         rvImages.setAdapter(imageGridAdapter);
         rvImages.setNestedScrollingEnabled(false);
@@ -258,7 +264,7 @@ public class SellerProductNewActivity extends AppCompatActivity {
                 if(charSequence.length() > 0){
                     try{
                         val = Double.parseDouble(charSequence.toString());
-                        val -= val * COMMISSION_VALUE / 100;
+                        val -= val * COMMISSION_PERCENTAGE_VALUE / 100;
                     }
                     catch(Exception e){
                         e.printStackTrace();
@@ -396,24 +402,56 @@ public class SellerProductNewActivity extends AppCompatActivity {
 
     private void saveProduct(){
         validateForm();
+
         if(VALIDATION_FLAG == 0){
-            Product p = Product.Saleable(selectedCategory, name, price, earning, quantity, expiry, location, description, productImages);
-            API.newProduct(p, new ApiResponse.ProductListener() {
+            showProgressDialog();
+            Product productToSave = Product.Saleable(selectedCategory, name, price, earning, quantity, expiry, location, description, productImages);
+
+            API.newProduct(productToSave, new ApiResponse.ProductListener() {
                 @Override
                 public void onSuccess(Product product) {
-                    Log.d(TAG, API.PRELOG_SUCCESS + product.getName());
+                    showSuccessDialog(product);
                 }
 
                 @Override
                 public void onFailure(JSONObject response) {
-                    Log.d(TAG, API.PRELOG_FAILURE + response.toString());
+                    showErrorDialog(response.toString());
                 }
 
                 @Override
                 public void onException(Exception e) {
-                    Log.d(TAG, API.PRELOG_EXCEPTION + e.getMessage());
+                    showErrorDialog(e.getMessage());
                 }
             });
         }
+    }
+
+    private void showProgressDialog() {
+        dialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        dialog.getProgressHelper().setBarColor(getResources().getColor(R.color.primaryColor));
+        dialog.setTitleText("Saving product");
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void showSuccessDialog(final Product product) {
+        dialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+        dialog.setTitleText("Saved");
+        dialog.setConfirmText("View");
+        dialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                Product.selected = product;
+                startActivity(new Intent(SellerProductNewActivity.this, ProductActivity.class));
+                finish();
+            }
+        });
+    }
+
+    private void showErrorDialog(String errorMessage) {
+        dialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
+        dialog.setTitleText("Error");
+        dialog.setContentText(errorMessage);
+        dialog.setCancelable(true);
     }
 }

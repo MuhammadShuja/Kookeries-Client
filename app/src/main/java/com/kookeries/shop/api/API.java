@@ -114,6 +114,10 @@ public class API {
     ------------------------------------
     */
 
+    public static void getSellerDashboard(final ApiResponse.SellerDashboardListener listener) {
+        SellerController.dashboard(mContext, listener);
+    }
+
     public static void getSellerOrders(final ApiResponse.CatalogListener<Product> listener){
 //        SellerController.products(mContext, listener);
     }

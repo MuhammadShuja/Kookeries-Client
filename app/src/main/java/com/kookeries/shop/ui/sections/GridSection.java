@@ -1,8 +1,6 @@
 package com.kookeries.shop.ui.sections;
 
 import android.app.Activity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,6 +11,9 @@ import com.kookeries.shop.ui.adapters.ProductGridAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class GridSection {
     private Activity activity;
@@ -27,15 +28,19 @@ public class GridSection {
     private String reloadMessage = null;
     private String refreshMessage = null;
 
+    private int gridColumnCount;
+
     private LinearLayout titleWrapper, reloadWrapper, emptyWrapper;
     private TextView tvTitle;
     private RecyclerView rvGridItems;
 
     public GridSection(Activity activity, View section,
+                       int gridColumnCount,
                        SectionStateObserver sectionStateObserver,
                        ProductGridAdapter.OnItemClickListener itemClickListener) {
         this.activity = activity;
         this.gridWrapper = section;
+        this.gridColumnCount = gridColumnCount;
         this.stateObserver = sectionStateObserver;
         this.itemClickListener = itemClickListener;
 
@@ -76,7 +81,7 @@ public class GridSection {
         });
 
         rvGridItems = (RecyclerView) gridWrapper.findViewById(R.id.sectionBody);
-        rvGridItems.setLayoutManager(new GridLayoutManager(activity, 2));
+        rvGridItems.setLayoutManager(new GridLayoutManager(activity, gridColumnCount));
         rvGridItems.setAdapter(gridAdapter);
 
         titleWrapper = gridWrapper.findViewById(R.id.sectionTitleWrapper);

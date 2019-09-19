@@ -3,40 +3,40 @@ package com.kookeries.shop.ui.activities;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kookeries.shop.R;
+import com.kookeries.shop.ui.adapters.GenericListAdapter;
 import com.kookeries.shop.ui.adapters.OrderListAdapter;
 import com.kookeries.shop.ui.adapters.ProductListAdapter;
 import com.kookeries.shop.api.API;
 import com.kookeries.shop.models.OrderItem;
 import com.kookeries.shop.models.Product;
 import com.kookeries.shop.models.User;
+import com.kookeries.shop.ui.sections.ListSection;
 import com.kookeries.shop.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kookeries.shop.utils.Utils.setListViewHeightBasedOnChildren;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class SellerDashboardActivity extends AppCompatActivity {
     private static final String TAG = "SellerDashboardActivity";
 
-    private ListView lvOrders, lvProducts;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private List<OrderItem> orderItems = new ArrayList<>();
-    private List<Product> products = new ArrayList<>();
+    private OrderListAdapter.OnItemClickListener orderClickListener = null;
+    private ListSection<OrderItem> orderListSection = null;
 
-    private OrderListAdapter orderListAdapter;
-    private ProductListAdapter productListAdapter;
+    private ProductListAdapter.OnItemClickListener productClickListener = null;
+    private ListSection<Product> productListSection = null;
 
     private View.OnClickListener viewAllOrdersListener = new View.OnClickListener(){
         @Override
@@ -60,8 +60,7 @@ public class SellerDashboardActivity extends AppCompatActivity {
         API.instantiate(getApplicationContext());
 
         setupToolbar();
-        setupOrders();
-        setupProducts();
+        initSwipeRefreshLayout();
         populateData();
     }
 
@@ -90,76 +89,125 @@ public class SellerDashboardActivity extends AppCompatActivity {
     }
 
     private void setupToolbar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Seller Dashboard");
     }
 
-    private void setupOrders(){
-        ((TextView) findViewById(R.id.btnViewOrders)).setOnClickListener(viewAllOrdersListener);
+    private void initSwipeRefreshLayout() {
+        mSwipeRefreshLayout = findViewById(R.id.refreshLayout);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.white);
+        int indicatorColorArray[] = {R.color.primaryColor, R.color.orange};
+        mSwipeRefreshLayout.setColorSchemeResources(indicatorColorArray);
 
-        FrameLayout flOrders = (FrameLayout) findViewById(R.id.sectionLatestOrders);
-        flOrders.setBackgroundColor(getResources().getColor(R.color.white));
-        TextView tvOrders = (TextView) flOrders.findViewById(R.id.sectionTitle);
-        tvOrders.setTextSize(14);
-        tvOrders.setText("Latest Orders");
-
-        lvOrders = (ListView) flOrders.findViewById(R.id.sectionBody);
-        orderListAdapter = new OrderListAdapter(this, orderItems, R.layout.card_order_horizontal);
-        lvOrders.setAdapter(orderListAdapter);
-        setListViewHeightBasedOnChildren(lvOrders);
-        ((TextView) flOrders.findViewById(R.id.sectionAction)).setOnClickListener(viewAllOrdersListener);
-    }
-
-    private void setupProducts(){
-        ((TextView) findViewById(R.id.btnViewProducts)).setOnClickListener(viewAllProductsListener);
-
-        FrameLayout flProducts = (FrameLayout) findViewById(R.id.sectionLatestProducts);
-        flProducts.setBackgroundColor(getResources().getColor(R.color.white));
-        TextView tvProducts = (TextView) flProducts.findViewById(R.id.sectionTitle);
-        tvProducts.setTextSize(14);
-        tvProducts.setText("Latest Products");
-
-        lvProducts = (ListView) flProducts.findViewById(R.id.sectionBody);
-        productListAdapter = new ProductListAdapter(this, products, R.layout.card_product_horizontal);
-        lvProducts.setAdapter(productListAdapter);
-        setListViewHeightBasedOnChildren(lvProducts);
-        ((TextView) flProducts.findViewById(R.id.sectionAction)).setOnClickListener(viewAllProductsListener);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                reloadData(true);
+            }
+        });
     }
 
     private void populateData() {
-        User.getProducts(new User.ProductsReadyListener() {
+        findViewById(R.id.btnViewOrders).setOnClickListener(viewAllOrdersListener);
+        findViewById(R.id.btnViewProducts).setOnClickListener(viewAllProductsListener);
+
+        reloadData(false);
+    }
+
+    private void reloadData(boolean reloadFromServer) {
+        User.getDashboard(reloadFromServer, new User.DashboardReadyListener() {
             @Override
-            public void onReady(List<Product> data) {
-//                ((TextView) findViewById(R.id.productCount)).setText(data.size());
+            public void onReady(int orderCount, int productCount, List<OrderItem> latestOrders, List<Product> latestProducts) {
+                setupCounts(orderCount, productCount);
+                setupLatestOrders(latestOrders);
+                setupLatestProducts(latestProducts);
+
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
 
-        User.getLatestProducts(new User.ProductsReadyListener() {
-            @Override
-            public void onReady(List<Product> data) {
-                products.clear();
-                products.addAll(data);
+    private void setupCounts(int ordersCount, int productsCount) {
+        ((TextView) findViewById(R.id.orderCount)).setText(String.valueOf(ordersCount));
+        ((TextView) findViewById(R.id.productCount)).setText(String.valueOf(productsCount));
+    }
 
-                productListAdapter.setProducts(data);
-                setListViewHeightBasedOnChildren(lvProducts);
-            }
-        });
+    private void setupLatestOrders(final List<OrderItem> latestOrders) {
+        if (orderClickListener == null) {
+            orderClickListener = new OrderListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(OrderItem orderItem) {
+                }
+            };
+        }
 
-//        User.getLatestOrders(new User.OrdersReadyListener() {
-//            @Override
-//            public void onReady(List<OrderItem> data) {
-//
-//            }
-//        });
+        if (orderListSection == null) {
+            orderListSection = new ListSection<>(findViewById(R.id.sectionLatestOrders),
+                    new OrderListAdapter(this, new ArrayList<OrderItem>(), R.layout.card_order_horizontal, orderClickListener),
+                    new ListSection.SectionStateObserver<OrderItem>() {
+                        @Override
+                        public void sectionReadyToReload(final GenericListAdapter<OrderItem> adapter) {
+                            adapter.setData(latestOrders);
+                        }
 
-        orderItems.add(new OrderItem(1, "f1", "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet", 5, "500", "0"));
-        orderItems.add(new OrderItem(1, "f2", "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet", 5, "500", "0"));
-        orderItems.add(new OrderItem(1, "f3", "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet", 5, "500", "0"));
-        orderItems.add(new OrderItem(1, "f4", "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet", 5, "500", "0"));
-        orderItems.add(new OrderItem(1, "f5", "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet", 5, "500", "0"));
+                        @Override
+                        public void sectionEmpty() {
 
-        orderListAdapter.setData(orderItems);
+                        }
 
+                        @Override
+                        public void sectionLoaded() {
+
+                        }
+                    });
+            orderListSection.setBackgroundColor(getResources().getColor(R.color.white));
+            orderListSection.setTitle("Latest Orders");
+            orderListSection.setTitleSize(14);
+            orderListSection.setSectionHeightBasedOnChildren(true);
+            orderListSection.setActionListener(viewAllOrdersListener);
+        } else {
+            orderListSection.setData(latestOrders);
+        }
+    }
+
+    private void setupLatestProducts(final List<Product> latestProducts) {
+        if (productClickListener == null) {
+            productClickListener = new ProductListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(Product product) {
+                    Product.selected = product;
+                    startActivity(new Intent(SellerDashboardActivity.this, ProductActivity.class));
+                }
+            };
+        }
+
+        if (productListSection == null) {
+            productListSection = new ListSection<>(findViewById(R.id.sectionLatestProducts),
+                    new ProductListAdapter(this, new ArrayList<Product>(), R.layout.card_product_horizontal, productClickListener),
+                    new ListSection.SectionStateObserver<Product>() {
+                        @Override
+                        public void sectionReadyToReload(final GenericListAdapter<Product> adapter) {
+                            adapter.setData(latestProducts);
+                        }
+
+                        @Override
+                        public void sectionEmpty() {
+
+                        }
+
+                        @Override
+                        public void sectionLoaded() {
+
+                        }
+                    });
+            productListSection.setBackgroundColor(getResources().getColor(R.color.white));
+            productListSection.setTitle("Latest Products");
+            productListSection.setTitleSize(14);
+            productListSection.setSectionHeightBasedOnChildren(true);
+            productListSection.setActionListener(viewAllProductsListener);
+        } else {
+            productListSection.setData(latestProducts);
+        }
     }
 }

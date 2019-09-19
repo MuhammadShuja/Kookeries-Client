@@ -2,23 +2,20 @@ package com.kookeries.shop.ui.activities;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.kookeries.shop.R;
-import com.kookeries.shop.api.config.ApiResponse;
 import com.kookeries.shop.ui.adapters.ProductGridAdapter;
 import com.kookeries.shop.api.API;
 import com.kookeries.shop.models.Cart;
@@ -26,9 +23,6 @@ import com.kookeries.shop.models.Category;
 import com.kookeries.shop.models.Product;
 import com.kookeries.shop.ui.sections.GridSection;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class CatalogActivity extends AppCompatActivity {
@@ -100,7 +94,7 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void setupToolbar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.menu_item_back));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -118,7 +112,7 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void setupProducts(){
-        mGridSection = new GridSection(CatalogActivity.this, findViewById(R.id.sectionGrid),
+        mGridSection = new GridSection(CatalogActivity.this, findViewById(R.id.sectionGrid), 2,
                 new GridSection.SectionStateObserver() {
                     @Override
                     public void sectionReadyToReload(final ProductGridAdapter adapter) {
@@ -126,6 +120,7 @@ public class CatalogActivity extends AppCompatActivity {
                             @Override
                             public void onReady(List<Product> productsList) {
                                 adapter.setData(productsList);
+                                mSwipeRefreshLayout.setEnabled(false);
                             }
                         });
                     }

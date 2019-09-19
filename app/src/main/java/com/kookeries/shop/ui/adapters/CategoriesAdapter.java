@@ -14,23 +14,23 @@ import com.kookeries.shop.models.Category;
 
 import java.util.List;
 
-public class CategoriesAdapter extends ArrayAdapter<Category>{
+public class CategoriesAdapter extends GenericListAdapter<Category> {
 
     private Context mContext;
-    private List<Category> categories;
     private int resource;
+    private OnItemClickListener onItemClickListener;
 
-    public CategoriesAdapter(Context mContext, List<Category> categories, int resource) {
-        super(mContext, resource, categories);
+    public CategoriesAdapter(Context mContext, List<Category> categories, int resource, OnItemClickListener onItemClickListener) {
+        super(categories);
+
         this.mContext = mContext;
-        this.categories = categories;
         this.resource = resource;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder holder = null;
+    public View getView(int position, View view, ViewGroup viewGroup, final Category category) {
+        ViewHolder holder;
         if (view == null) {
             holder = new ViewHolder();
             LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -46,28 +46,29 @@ public class CategoriesAdapter extends ArrayAdapter<Category>{
             holder = (ViewHolder) view.getTag();
         }
 
-        holder.name.setText(categories.get(position).getName());
+        holder.name.setText(category.getName());
         Glide
                 .with(mContext)
-                .load(categories.get(position).getThumbnail())
+                .load(category.getThumbnail())
                 .into(holder.thumbnail);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClickListener.onItemClick(category);
+            }
+        });
 
         return view;
     }
 
-    @Override
-    public int getCount() {
-        return categories.size();
-    }
-
-    public void setData(List<Category> data){
-        this.categories = data;
-        notifyDataSetChanged();
-    }
-
-    public class ViewHolder{
+    private class ViewHolder {
         private ImageView thumbnail;
         private TextView name;
         private TextView action;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Category category);
     }
 }

@@ -1,12 +1,13 @@
 package com.kookeries.shop.ui.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.kookeries.shop.R;
 import com.kookeries.shop.api.API;
 import com.kookeries.shop.persistence.SPM;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 

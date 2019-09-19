@@ -16,25 +16,25 @@ import com.kookeries.shop.models.Product;
 
 import java.util.List;
 
-public class ProductListAdapter extends ArrayAdapter<Product> {
+public class ProductListAdapter extends GenericListAdapter<Product> {
 
     private Context mContext;
-    private List<Product> items;
     private int resource;
+    private OnItemClickListener onItemClickListener;
 
-    public ProductListAdapter(Context mContext, List<Product> items, int resource) {
-        super(mContext, resource, items);
+    public ProductListAdapter(Context mContext, List<Product> items, int resource, OnItemClickListener onItemClickListener) {
+        super(items);
+
         this.mContext = mContext;
-        this.items = items;
         this.resource = resource;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ProductListAdapter.ViewHolder holder = null;
+    public View getView(final int position, View view, ViewGroup viewGroup, final Product product) {
+        ViewHolder holder;
         if (view == null) {
-            holder = new ProductListAdapter.ViewHolder();
+            holder = new ViewHolder();
             LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             view = layoutInflater.inflate(resource, null);
 
@@ -44,46 +44,51 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
             holder.oldPrice = (TextView) view.findViewById(R.id.oldPrice);
             holder.discount = (TextView) view.findViewById(R.id.discount);
             holder.oldPriceWrapper = (LinearLayout) view.findViewById(R.id.oldPriceWrapper);
+            holder.expiry = (TextView) view.findViewById(R.id.expiry);
 
             view.setTag(holder);
-        }
-        else{
-            holder = (ProductListAdapter.ViewHolder) view.getTag();
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
 
-        holder.name.setText(items.get(position).getName());
-        holder.price.setText(items.get(position).getPrice());
-        if(items.get(position).getOldPrice() != null){
-            holder.oldPrice.setText(items.get(position).getOldPrice());
+        holder.name.setText(product.getName());
+        holder.expiry.setText(product.getExpiry());
+
+        holder.price.setText(product.getPrice());
+        if (product.getOldPrice() != null) {
+            holder.oldPrice.setText(product.getOldPrice());
             holder.oldPrice.setPaintFlags(holder.oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.discount.setText(items.get(position).getDiscount());
+            holder.discount.setText(product.getDiscount());
 
             holder.oldPriceWrapper.setVisibility(View.VISIBLE);
         }
+
         Glide
                 .with(mContext)
-                .load(items.get(position).getThumbnail())
+                .load(product.getThumbnail())
                 .into(holder.thumbnail);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClickListener.onItemClick(product);
+            }
+        });
 
         return view;
     }
 
-    @Override
-    public int getCount() {
-        return items.size();
-    }
-
-    public void setProducts(List<Product> products){
-        this.items = products;
-        notifyDataSetChanged();
-    }
-
-    public class ViewHolder{
+    private class ViewHolder {
         private ImageView thumbnail;
         private TextView name;
         private TextView price;
         private TextView oldPrice;
         private TextView discount;
+        private TextView expiry;
         private LinearLayout oldPriceWrapper;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Product product);
     }
 }

@@ -1,11 +1,7 @@
 package com.kookeries.shop.ui.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +13,10 @@ import com.kookeries.shop.R;
 import com.kookeries.shop.models.Slide;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.viewpager.widget.PagerAdapter;
 
 public class SliderAdapter extends PagerAdapter {
     private List<Slide> slides;
@@ -31,7 +31,6 @@ public class SliderAdapter extends PagerAdapter {
         mLayoutInflater = LayoutInflater.from(mContext);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
@@ -44,9 +43,9 @@ public class SliderAdapter extends PagerAdapter {
                 .load(getImage(slides.get(position).getImage()))
                 .into(imageView);
 
-        if (wrapper != null) {
-            wrapper.getBackground().setTint(Color.parseColor(slides.get(position).getColor()));
-        }
+//        if (wrapper != null) {
+//            wrapper.getBackground().setTint(Color.parseColor(slides.get(position).getColor()));
+//        }
 
 //        Toast.makeText(mContext, slides.get(position).getImage()+" - "+slides.get(position).getColor(), Toast.LENGTH_SHORT).show();
 

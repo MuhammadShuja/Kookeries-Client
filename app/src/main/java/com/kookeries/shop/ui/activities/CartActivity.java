@@ -1,9 +1,7 @@
 package com.kookeries.shop.ui.activities;
 
 import android.content.pm.ActivityInfo;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -17,6 +15,9 @@ import com.kookeries.shop.models.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -34,7 +35,7 @@ public class CartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cart);
         API.instantiate(getApplicationContext());
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(false);

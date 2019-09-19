@@ -3,7 +3,6 @@ package com.kookeries.shop.ui.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,8 @@ import android.widget.TextView;
 import com.kookeries.shop.R;
 import com.kookeries.shop.api.API;
 import com.kookeries.shop.models.User;
+
+import androidx.fragment.app.Fragment;
 
 public class AccountFragment extends Fragment {
     private static final String TAG = "AccountFragment";

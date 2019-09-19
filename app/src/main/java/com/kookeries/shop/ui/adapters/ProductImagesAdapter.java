@@ -2,9 +2,6 @@ package com.kookeries.shop.ui.adapters;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +12,9 @@ import com.kookeries.shop.R;
 import com.kookeries.shop.models.ProductImage;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 
 public class ProductImagesAdapter extends PagerAdapter {
     private List<ProductImage> images;
@@ -27,7 +27,6 @@ public class ProductImagesAdapter extends PagerAdapter {
         mLayoutInflater = LayoutInflater.from(mContext);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {

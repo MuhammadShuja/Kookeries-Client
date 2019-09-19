@@ -5,15 +5,15 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
+
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kookeries.shop.R;
-import com.kookeries.shop.api.config.ApiResponse;
 import com.kookeries.shop.ui.adapters.ProductImagesAdapter;
 import com.kookeries.shop.ui.adapters.ProductGridAdapter;
 import com.kookeries.shop.api.API;
@@ -33,9 +32,6 @@ import com.kookeries.shop.models.Product;
 import com.kookeries.shop.ui.sections.GridSection;
 import com.viewpagerindicator.CirclePageIndicator;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,7 +47,7 @@ public class ProductActivity extends AppCompatActivity {
     private static int NUM_PAGES = 0;
     private static int CART_COUNT = Cart.count();
 
-    private TextView name, price, oldPrice, discount, category, description, tvAddToCart, tvActionCartCount;
+    private TextView name, price, oldPrice, discount, category, expiry, description, tvAddToCart, tvActionCartCount;
     private LinearLayout categoryWrapper;
 
     @Override
@@ -72,6 +68,7 @@ public class ProductActivity extends AppCompatActivity {
         oldPrice = (TextView) findViewById(R.id.oldPrice);
         discount = (TextView) findViewById(R.id.discount);
         category = (TextView) findViewById(R.id.category);
+        expiry = (TextView) findViewById(R.id.expiry);
         description = (TextView) findViewById(R.id.description);
 
         categoryWrapper = (LinearLayout) findViewById(R.id.categoryWrapper);
@@ -80,6 +77,7 @@ public class ProductActivity extends AppCompatActivity {
             Log.d(TAG, API.PRELOG_CHECK + Product.selected.getName());
             name.setText(Product.selected.getName());
             price.setText(Product.selected.getPrice());
+            expiry.setText(Product.selected.getExpiry());
             if(Product.selected.getOldPrice() != null){
                 ((LinearLayout) findViewById(R.id.oldPriceWrapper)).setVisibility(View.VISIBLE);
                 oldPrice.setPaintFlags(oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -202,7 +200,7 @@ public class ProductActivity extends AppCompatActivity {
     }
 
     private void setupToolbar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.menu_item_back));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -225,14 +223,15 @@ public class ProductActivity extends AppCompatActivity {
     }
 
     private void setupProducts(){
-        mGridSection = new GridSection(ProductActivity.this, findViewById(R.id.sectionGrid),
+        mGridSection = new GridSection(ProductActivity.this, findViewById(R.id.sectionGrid), 3,
                 new GridSection.SectionStateObserver() {
                     @Override
                     public void sectionReadyToReload(final ProductGridAdapter adapter) {
-                        Product.selected.getCategory().takeProducts(false, 8, true, Product.selected, new Category.DataReadyListener() {
+                        Product.selected.getCategory().takeProducts(false, 9, true, Product.selected, new Category.DataReadyListener() {
                             @Override
                             public void onReady(List<Product> productsList) {
                                 adapter.setData(productsList);
+                                mSwipeRefreshLayout.setEnabled(false);
                             }
                         });
                     }

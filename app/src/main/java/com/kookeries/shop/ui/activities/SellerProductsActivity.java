@@ -3,34 +3,36 @@ package com.kookeries.shop.ui.activities;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import com.kookeries.shop.R;
+import com.kookeries.shop.ui.adapters.GenericListAdapter;
 import com.kookeries.shop.ui.adapters.ProductListAdapter;
 import com.kookeries.shop.api.API;
 import com.kookeries.shop.models.Product;
 import com.kookeries.shop.models.User;
+import com.kookeries.shop.ui.sections.ListSection;
 import com.kookeries.shop.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 public class SellerProductsActivity extends AppCompatActivity {
     private static final String TAG = "SellerProductsActivity";
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private ProductListAdapter.OnItemClickListener listener = null;
+    private ListSection<Product> productListSection = null;
+
 //    private PlacesClient placesClient;
 //    private FindCurrentPlaceRequest currentPlaceRequest;
-
-    private ListView lvProducts;
-    private List<Product> products = new ArrayList<>();
-    private ProductListAdapter productListAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +42,8 @@ public class SellerProductsActivity extends AppCompatActivity {
         API.instantiate(getApplicationContext());
 
         setupToolbar();
+        initSwipeRefreshLayout();
         setupProducts();
-        populateData();
     }
 
     @Override
@@ -55,7 +57,9 @@ public class SellerProductsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.add) {
+        if (id == android.R.id.home) {
+            finish();
+        } else if (id == R.id.add) {
             startActivity(new Intent(SellerProductsActivity.this, SellerProductNewActivity.class));
             return true;
         }
@@ -64,30 +68,74 @@ public class SellerProductsActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Products");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+    }
+
+    private void initSwipeRefreshLayout() {
+        mSwipeRefreshLayout = findViewById(R.id.refreshLayout);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.white);
+        int indicatorColorArray[] = {R.color.primaryColor, R.color.orange};
+        mSwipeRefreshLayout.setColorSchemeResources(indicatorColorArray);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                reloadData();
+            }
+        });
     }
 
     private void setupProducts() {
-        lvProducts = (ListView) findViewById(R.id.lvProducts);
-        productListAdapter = new ProductListAdapter(this, products, R.layout.card_product_horizontal);
-        lvProducts.setAdapter(productListAdapter);
+        if (listener == null) {
+            listener = new ProductListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(Product product) {
+                    Product.selected = product;
+                    startActivity(new Intent(SellerProductsActivity.this, ProductActivity.class));
+                }
+            };
+        }
+
+        if (productListSection == null) {
+            productListSection = new ListSection<>(findViewById(R.id.sectionListProducts),
+                    new ProductListAdapter(this, new ArrayList<Product>(), R.layout.card_product_horizontal, listener),
+                    new ListSection.SectionStateObserver<Product>() {
+                        @Override
+                        public void sectionReadyToReload(final GenericListAdapter<Product> adapter) {
+                            User.getProducts(new User.ProductsReadyListener() {
+                                @Override
+                                public void onReady(List<Product> data) {
+                                    adapter.setData(data);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void sectionEmpty() {
+
+                        }
+
+                        @Override
+                        public void sectionLoaded() {
+
+                        }
+                    });
+            productListSection.setBackgroundColor(getResources().getColor(R.color.white));
+        }
     }
 
-    private void populateData() {
+    private void reloadData() {
         User.getProducts(new User.ProductsReadyListener() {
             @Override
             public void onReady(List<Product> data) {
-                products.clear();
-//                products.addAll(data);
+                productListSection.setData(data);
 
-                for (int i = 0; i < 15; i++) {
-                    products.add(data.get(0));
-                }
-                Log.d(TAG, API.PRELOG_CHECK + products.size());
-
-                productListAdapter.setProducts(data);
+                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayout.setEnabled(false);
             }
         });
     }

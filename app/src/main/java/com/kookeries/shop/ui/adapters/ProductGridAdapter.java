@@ -2,8 +2,6 @@ package com.kookeries.shop.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +13,9 @@ import com.kookeries.shop.R;
 import com.kookeries.shop.models.Product;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.ViewHolder> {
 

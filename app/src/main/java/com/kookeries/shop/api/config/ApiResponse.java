@@ -1,5 +1,6 @@
 package com.kookeries.shop.api.config;
 
+import com.kookeries.shop.models.OrderItem;
 import com.kookeries.shop.models.Product;
 import com.kookeries.shop.models.User;
 
@@ -17,6 +18,14 @@ public class ApiResponse {
     public interface UserListener{
         void onSuccess(User user);
         void onFailure(JSONObject response);
+        void onException(Exception e);
+    }
+
+    public interface SellerDashboardListener {
+        void onSuccess(int ordersCount, int productsCount, List<OrderItem> latestOrders, List<Product> latestProducts);
+
+        void onFailure(JSONObject response);
+
         void onException(Exception e);
     }
 

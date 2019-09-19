@@ -14,21 +14,22 @@ import com.kookeries.shop.models.OrderItem;
 
 import java.util.List;
 
-public class OrderListAdapter extends ArrayAdapter<OrderItem> {
+public class OrderListAdapter extends GenericListAdapter<OrderItem> {
 
     private Context mContext;
-    private List<OrderItem> items;
     private int resource;
+    private OnItemClickListener onItemClickListener;
 
-    public OrderListAdapter(Context mContext, List<OrderItem> items, int resource) {
-        super(mContext, resource, items);
+    public OrderListAdapter(Context mContext, List<OrderItem> items, int resource, OnItemClickListener onItemClickListener) {
+        super(items);
+
         this.mContext = mContext;
-        this.items = items;
         this.resource = resource;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent, final OrderItem orderItem) {
         View view = convertView;
         OrderListAdapter.ViewHolder holder = null;
         if (view == null) {
@@ -47,33 +48,33 @@ public class OrderListAdapter extends ArrayAdapter<OrderItem> {
             holder = (OrderListAdapter.ViewHolder) view.getTag();
         }
 
-        holder.name.setText(items.get(position).getName());
-        holder.quantity.setText(String.valueOf(items.get(position).getQuantity()));
-        holder.price.setText(items.get(position).getPrice());
+        holder.name.setText(orderItem.getName());
+        holder.quantity.setText(String.valueOf(orderItem.getQuantity()));
+        holder.price.setText(orderItem.getPrice());
 
         Glide
                 .with(mContext)
-                .load(mContext.getResources().getIdentifier(items.get(position).getThumbnail(), "drawable", mContext.getPackageName()))
+                .load(orderItem.getThumbnail())
                 .into(holder.thumbnail);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClickListener.onItemClick(orderItem);
+            }
+        });
 
         return view;
     }
 
-    @Override
-    public int getCount() {
-        return items.size();
-    }
-
-    public void setData(List<OrderItem> items){
-        this.items = items;
-        notifyDataSetChanged();
-    }
-
-    public class ViewHolder{
+    private class ViewHolder {
         private ImageView thumbnail;
         private TextView name;
         private TextView price;
         private TextView quantity;
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(OrderItem orderItem);
+    }
 }

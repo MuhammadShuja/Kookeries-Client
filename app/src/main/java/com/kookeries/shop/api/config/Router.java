@@ -14,6 +14,7 @@ public class Router {
     private static final String EP_CATALOG_CATEGORY_INDEX = "/catalog/categories";
     private static final String EP_CATALOG_PRODUCT_INDEX = "/catalog/products";
 
+    private static final String EP_SELLER_DASHBOARD = "/seller/dashboard";
     private static final String EP_SELLER_ORDER_INDEX = "/seller/products/orders";
     private static final String EP_SELLER_ORDER_LATEST = "/seller/products/orders/latest";
     private static final String EP_SELLER_PRODUCT_INDEX = "/seller/products";
@@ -46,6 +47,8 @@ public class Router {
 
 //                SELLER EVENTS
 
+            case Event.SELLER_DASHBOARD:
+                return EP_API + EP_SELLER_DASHBOARD;
             case Event.SELLER_ORDER_INDEX:
                 return EP_API + EP_SELLER_ORDER_INDEX;
             case Event.SELLER_ORDER_LATEST:

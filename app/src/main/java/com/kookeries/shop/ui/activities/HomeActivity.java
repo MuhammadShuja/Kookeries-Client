@@ -2,15 +2,11 @@ package com.kookeries.shop.ui.activities;
 
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.kookeries.shop.R;
 import com.kookeries.shop.api.API;
@@ -20,6 +16,10 @@ import com.kookeries.shop.ui.fragments.CategoriesFragment;
 import com.kookeries.shop.ui.fragments.HomeFragment;
 import com.kookeries.shop.models.Cart;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 

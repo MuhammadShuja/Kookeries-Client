@@ -94,7 +94,7 @@ public class Category {
     */
 
     public void getProducts(boolean reload, DataReadyListener listener) {
-        if(products == null){
+        if (reload || products == null) {
             loadProducts(reload, listener);
         }
         else{

@@ -2,16 +2,19 @@ package com.kookeries.shop.ui.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v4.widget.SwipeRefreshLayout;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
+
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -177,7 +180,7 @@ public class HomeFragment extends Fragment {
                     currentPage = 0;
                 }
                 if(HEADER_FLAG == VECTOR_HEADER){
-//                    headerLayout.getBackground().setTint(Color.parseColor(slides.get(currentPage).getColor()));
+                    headerLayout.getBackground().setTint(Color.parseColor(slides.get(currentPage).getColor()));
                 }
                 mPager.setCurrentItem(currentPage++, true);
             }
@@ -212,7 +215,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void initProducts() {
-        mGridSection = new GridSection(getActivity(), fragmentRootView.findViewById(R.id.sectionGrid),
+        mGridSection = new GridSection(getActivity(), fragmentRootView.findViewById(R.id.sectionGrid), 2,
                 new GridSection.SectionStateObserver() {
                     @Override
                     public void sectionReadyToReload(final ProductGridAdapter adapter) {

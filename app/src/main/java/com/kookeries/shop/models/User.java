@@ -19,6 +19,9 @@ public class User {
     private static List<Product> latestProducts = null;
     private static List<Cart> cart = null;
 
+    private static int orderCount = -1;
+    private static int productCount = -1;
+
     private String name;
     private String email;
     private String phone;
@@ -27,7 +30,7 @@ public class User {
 
     /*
     ------------------------------------
-    |   Category Instances
+    |   User Instances
     ------------------------------------
     */
 
@@ -142,6 +145,40 @@ public class User {
 
     /*
     ------------------------------------
+    |   Seller Dashboard
+    ------------------------------------
+    */
+
+    public static void getDashboard(boolean reload, final DashboardReadyListener listener) {
+        if (reload || productCount < 0 || orderCount < 0 || latestProducts == null || latestOrders == null) {
+            API.getSellerDashboard(new ApiResponse.SellerDashboardListener() {
+                @Override
+                public void onSuccess(int ordersCount, int productsCount, List<OrderItem> latestOrders, List<Product> latestProducts) {
+                    User.orderCount = ordersCount;
+                    User.productCount = productsCount;
+                    User.latestOrders = latestOrders;
+                    User.latestProducts = latestProducts;
+
+                    listener.onReady(ordersCount, productsCount, latestOrders, latestProducts);
+                }
+
+                @Override
+                public void onFailure(JSONObject response) {
+                    Log.d(TAG, API.PRELOG_FAILURE + response.toString());
+                }
+
+                @Override
+                public void onException(Exception e) {
+                    Log.d(TAG, API.PRELOG_EXCEPTION + e.getMessage());
+                }
+            });
+        } else {
+            listener.onReady(orderCount, productCount, latestOrders, latestProducts);
+        }
+    }
+
+    /*
+    ------------------------------------
     |   Seller Orders
     ------------------------------------
     */
@@ -214,6 +251,7 @@ public class User {
     ------------------------------------
     */
 
+
     public static int getProductsCount(){
         return products.size();
     }
@@ -252,7 +290,6 @@ public class User {
             API.getSellerLatestProducts(new ApiResponse.CatalogListener<Product>() {
                 @Override
                 public void onSuccess(List<Product> data) {
-                    User.latestProducts = data;
                     listener.onReady(data);
                 }
 
@@ -280,6 +317,16 @@ public class User {
         void onReady(User user);
     }
 
+    public static void addNewProduct(Product product) {
+        if (User.latestProducts != null) {
+            User.latestProducts.add(0, product);
+        }
+
+        if (User.products != null) {
+            User.products.add(0, product);
+        }
+    }
+
     /*
     ------------------------------------
     |   Callback Listeners
@@ -292,5 +339,9 @@ public class User {
 
     public interface ProductsReadyListener{
         void onReady(List<Product> data);
+    }
+
+    public interface DashboardReadyListener {
+        void onReady(int orderCount, int productCount, List<OrderItem> latestOrders, List<Product> latestProducts);
     }
 }
